@@ -6,7 +6,8 @@ path              = require('path'),
 passport          = require('passport'),
 LocalStrategy     = require('passport-local'),
 User              = require('./models/user'),
-expressSession  = require('express-session'),
+expressSession    = require('express-session'),
+methodOverride    = require('method-override'),
 seedDB            = require('./seeds');
 
 //some constants
@@ -33,6 +34,7 @@ mongoose.connect(uri, {
 app.set("view engine", "ejs");
 app.use(express.urlencoded({extended: true}));
 app.use(express.static(path.join(__dirname,"public")));
+app.use(methodOverride('_method'));
 
 //passport and express-session setup
 app.use(expressSession({
@@ -52,8 +54,6 @@ app.use((req, res, next) => {
   res.locals.currentUser = req.user;
   next();
 })
-
-
 
 //routes
 const

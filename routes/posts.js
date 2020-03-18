@@ -1,7 +1,8 @@
 const 
 express   = require('express'),
 router    = express.Router({mergeParams: true}),
-Post      = require('../models/post');
+Post      = require('../models/post'),
+Comment   = require('../models/comment');
 
 //index
 router.get('/', (req, res) => {
@@ -60,6 +61,53 @@ router.get('/:id', (req, res) => {
   });
 });
 
+//edit
+router.get('/:id/edit', (req, res) => {
+  Post.findById(req.params.id, (err, post) => {
+    if(err){
+      console.log(err);
+      res.redirect('/');
+    }
+    else{
+      res.render('posts/edit', {post: post});
+    }
+  })
+})
+
+//update
+router.put('/:id', (req, res) => {
+  Post.findByIdAndUpdate(req.params.id, req.body.post, (err, post) =>{
+    if(err){
+      console.log(err);
+      res.redirect('/');
+    }
+    else{
+      res.redirect('/posts/'+post._id);
+    }
+  })
+})
+
+//delete
+router.delete('/:id', (req, res) => {
+  Post.findByIdAndDelete(req.params.id, (err, post) => {
+    if(err){
+      console.log(err);
+      res.redirect('/');
+    }
+    else{
+      Comment.deleteMany().where("_id").in(post.comments).exec((err, comments) =>{
+        if(err){
+          console.log(err);
+          res.redirect('/');
+        }
+        else{
+          res.redirect('/');
+        }
+      })
+    }
+  })
+})
+
 function isLoggedIn(req, res, next){
   if(req.isAuthenticated()) return next()
   else{
@@ -67,4 +115,4 @@ function isLoggedIn(req, res, next){
   }
 }
 
-module.exports = router
+module.exports = router;
