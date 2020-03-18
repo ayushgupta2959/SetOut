@@ -1,0 +1,60 @@
+<%- include('../partials/header') -%>
+<div class="container mt-3">
+  <div class="row">
+    <div class="col-md-3 mb-3">
+      <p class="lead">SetOut</p>
+      <p>Add Something here</p>
+    </div>
+    <div class="col-md-9 mb-3">
+      <div class="card mb-3">
+        <img src="<%= post.image%>" class="card-img-top">
+        <div class="card-body">
+          <a href="#" class="card-title float-right btn btn-outline-primary">Like</a>
+          <a href="#" class="card-title float-right btn btn-outline-info">Add to favorite</a>
+          <h5 class="card-title"><%= post.title%></h5>
+          <p class="card-text"><%= post.description %></p>
+          <p class="card-text"><small class="text-muted">Created by <%= post.author.username %></small></p>
+          <% if(currentUser && post.author.id.equals(currentUser._id)){ %>
+            <a href="/posts/<%= post._id %>/edit" class="btn btn-warning">Edit</a>
+            <form id="post-delete-form" action="/posts/<%= post._id %>?_method=DELETE", method="POST">
+              <button class="btn btn-danger">Delete</button>
+            </form>
+          <% } %>
+        </div>
+      </div>
+      <hr>
+      <div class="mb-4">
+        <a href="/posts/<%= post._id %>/comments/new" class="btn btn-success float-right">Add Comment</a>
+        <h4>Comments</h4>
+      </div>
+      <div class="shadow p-3 mb-5 bg-white rounded">
+        <div class="container">
+          <ul class="list-group list-group-flush">
+            <% post.comments.forEach((comment) => { %>
+              <li class="list-group-item">
+                <div class="mb-2">
+                  <% if(currentUser && comment.author.id.equals(currentUser._id)){ %>
+                    <form class="float-right" action="/posts/<%= post._id%>/posts/<%= comment._id%>?_method=DELETE" method="POST">
+                      <button class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                    <a class="btn btn-sm btn-warning float-right mr-1" href="/posts/<%=post._id%>/comments/<%=comment._id%>/edit">
+                      Edit
+                    </a>
+                  <% } %>
+                  <strong><%= comment.author.username %></strong> - 
+                  <span>Add Creation time</span>
+                </div>
+                <p>
+                  <%= comment.text %>
+                </p>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') -%>
+
+

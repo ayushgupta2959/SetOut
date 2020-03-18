@@ -1,0 +1,24 @@
+{
+  "name": "setout",
+  "version": "1.0.0",
+  "description": "social media platform to showcase the places  you visit",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node -r dotenv/config app"
+  },
+  "author": "Ayush Gupta",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^3.0.1",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "mongoose": "^5.9.5",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^6.0.1"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  }
+}
