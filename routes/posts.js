@@ -1,8 +1,9 @@
 const 
-express   = require('express'),
-router    = express.Router({mergeParams: true}),
-Post      = require('../models/post'),
-Comment   = require('../models/comment');
+express     = require('express'),
+router      = express.Router({mergeParams: true}),
+Post        = require('../models/post'),
+Comment     = require('../models/comment'),
+middleware  = require('../middleware/index');
 
 //index
 router.get('/', (req, res) => {
@@ -18,7 +19,7 @@ router.get('/', (req, res) => {
 });
 
 //create
-router.post('/', isLoggedIn, (req, res) => {
+router.post('/', middleware.isLoggedIn, (req, res) => {
   const title = req.body.title;
   const image = req.body.image;
   const description = req.body.description;
@@ -44,7 +45,7 @@ router.post('/', isLoggedIn, (req, res) => {
 });
 
 //new
-router.get('/new', isLoggedIn, (req, res) => {
+router.get('/new', middleware.isLoggedIn, (req, res) => {
   res.render('posts/new');
 });
 
@@ -62,7 +63,7 @@ router.get('/:id', (req, res) => {
 });
 
 //edit
-router.get('/:id/edit', (req, res) => {
+router.get('/:id/edit', middleware.checkPostOwnership, (req, res) => {
   Post.findById(req.params.id, (err, post) => {
     if(err){
       console.log(err);
@@ -75,7 +76,7 @@ router.get('/:id/edit', (req, res) => {
 })
 
 //update
-router.put('/:id', (req, res) => {
+router.put('/:id', middleware.checkPostOwnership, (req, res) => {
   Post.findByIdAndUpdate(req.params.id, req.body.post, (err, post) =>{
     if(err){
       console.log(err);
@@ -88,7 +89,7 @@ router.put('/:id', (req, res) => {
 })
 
 //delete
-router.delete('/:id', (req, res) => {
+router.delete('/:id', middleware.checkPostOwnership, (req, res) => {
   Post.findByIdAndDelete(req.params.id, (err, post) => {
     if(err){
       console.log(err);
@@ -107,12 +108,5 @@ router.delete('/:id', (req, res) => {
     }
   })
 })
-
-function isLoggedIn(req, res, next){
-  if(req.isAuthenticated()) return next()
-  else{
-    res.redirect('/login')
-  }
-}
 
 module.exports = router;
