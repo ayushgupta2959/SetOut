@@ -1,7 +1,7 @@
 {
   "name": "setout",
   "version": "1.0.0",
-  "description": "social media platform to showcase the places  you visit",
+  "description": "social media platform to for sharing travelling experiences.",
   "main": "index.js",
   "scripts": {
     "build": "babel src --out-dir dist",

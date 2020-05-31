@@ -6,8 +6,8 @@ import passportLocal from "passport-local"
 import User from "./models/user"
 import expressSession from "express-session"
 import methodOverride from "method-override"
-import commentRoutes from "./routes/comments"
-import postsRoutes from "./routes/posts"
+import commentRoutes from "./routes/comment"
+import postsRoutes from "./routes/post"
 import indexRoutes from "./routes/index"
 // const seedDB = require("./seeds")
 

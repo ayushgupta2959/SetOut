@@ -2,7 +2,7 @@ import express from "express"
 import Post from "../models/post"
 import Comment from "../models/comment"
 import _ from "lodash"
-import middleware from "../middleware/index"
+import middleware from "../utils/middleware"
 
 const router = express.Router({ mergeParams: true })
 
