@@ -64,7 +64,7 @@ app.use((req, res, next) => {
 // routes
 app.use("/", indexRoutes)
 app.use("/posts", postsRoutes)
-app.use("/posts/:id/comments", commentRoutes)
+app.use("/posts/:postId/comments", commentRoutes)
 
 app.listen(PORT, () => {
   console.log("Server started")

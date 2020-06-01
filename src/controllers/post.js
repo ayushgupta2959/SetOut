@@ -1,125 +1,129 @@
 import Post from "../models/post"
 import Comment from "../models/comment"
-import { model } from "mongoose"
 
-export const getAllPosts = () => async (req, res) => {
+const getAllPosts = async (req, res) => {
   try {
     const posts = await Post.find({}).lean().exec()
-    res.render("posts/index", { message: "success", posts: posts })
+    res.render("posts/index", { posts: posts })
   } catch (e) {
     console.log(e)
-    res.render("posts/index", { message: "error", error: e, posts: [] })
+    res.render("posts/index", { posts: [] })
   }
 }
 
-export const createOnePost = () => async (req, res) => {
+const createPost = async (req, res) => {
   try {
     const author = {
       id: req.user._id,
       username: req.user.username,
     }
     const post = await Post.create({ ...req.body, author })
-    res.redirect("/posts/" + post._id, { message: "success" })
+    if (!post) {
+      console.log("No post found")
+      res.redirect("/posts")
+    } else {
+      res.redirect("/posts/" + post._id)
+    }
   } catch (e) {
     console.log(e)
-    res.redirect("/", { message: "error", error: e })
+    res.redirect("/")
   }
 }
 
-export const newPostForm = () => async (req, res) => {
+const newPostForm = async (req, res) => {
   res.render("posts/new")
 }
 
-export const getOnePost = () => async (req, res) => {
+const getOnePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId)
       .populate("comments")
       .lean()
       .exec()
     if (!post) {
-      res.redirect("/posts", { message: "error", error: "No Post Found" })
+      console.log("No post found")
+      res.redirect("/posts")
+    } else {
+      res.render("posts/show", { post: post })
     }
-    res.render("posts/show", { message: "success", post: post })
   } catch (e) {
     console.log(e)
-    res.redirect("/", { message: "error", error: e })
+    res.redirect("/")
   }
 }
 
-export const editPost = () => async (req, res) => {
+const editPost = async (req, res) => {
   try {
-    const post = await Post.find({
-      author: {
-        id: req.user._id,
-      },
+    const post = await Post.findOne({
+      "author.id": req.user._id,
       _id: req.params.postId,
     })
       .lean()
       .exec()
     if (!post) {
-      res.redirect("/posts", {
-        message: "error",
-        error: "Unable to edit the post",
-      })
+      console.log("No post found")
+      res.redirect("/posts")
+    } else {
+      res.render("posts/edit", { post: post })
     }
-    res.render("posts/edit", { message: "success", post: post })
   } catch (e) {
     console.log(e)
-    res.redirect("/posts", { message: "error", error: e })
+    res.redirect("/posts")
   }
 }
 
-export const updatePost = () => async (req, res) => {
+const updatePost = async (req, res) => {
   try {
-    const post = await model
-      .findOneAndUpdate(
-        {
-          author: {
-            id: req.user._id,
-          },
-          _id: req.params.postId,
-        },
-        req.body.post,
-        { new: true }
-      )
+    const post = await Post.findOneAndUpdate(
+      {
+        "author.id": req.user._id,
+        _id: req.params.postId,
+      },
+      req.body.post,
+      { new: true }
+    )
       .lean()
       .exec()
 
     if (!post) {
-      res.redirect("/posts", { message: "error", error: "No post found" })
+      console.log("No post found")
+      res.redirect("/posts")
+    } else {
+      res.redirect("/posts/" + post._id)
     }
-    res.redirect("/posts/" + post._id, { message: "success" })
   } catch (e) {
     console.log(e)
-    res.redirect("/posts", { message: "error", error: e })
+    res.redirect("/posts")
   }
 }
 
-export const deletePost = () => async (req, res) => {
+const deletePost = async (req, res) => {
   try {
-    const post = await Post.findOneAndDelete({
-      author: {
-        id: req.user._id,
-      },
-      id: req.params.postId,
+    const post = await Post.findOneAndRemove({
+      "author.id": req.user._id,
+      _id: req.params.postId,
     })
+      .lean()
+      .exec()
     if (!post) {
-      res.redirect("/posts", { message: "error", error: "No post found" })
+      console.log("No post found")
+      res.redirect("/posts")
+    } else {
+      await Comment.deleteMany().where("_id").in(post.comments).exec()
+      res.redirect("/posts")
     }
-    await Comment.deleteMany().where("_id").in(post.comments).exec()
-    res.redirect("/posts", { message: "success" })
   } catch (e) {
     console.log(e)
-    res.redirect("/posts", { message: "error", error: e })
+    res.redirect("/posts")
   }
 }
 
-export const postControllers = () => ({
-  getAll: getAllPosts(),
-  createOne: createOnePost(),
-  newPostForm: newPostForm(),
-  getOne: getOnePost(),
-  editPost: editPost(),
-  updatePost: updatePost(),
-  deletePost: deletePost(),
-})
+export const postControllers = {
+  getAllPosts,
+  createPost,
+  newPostForm,
+  getOnePost,
+  editPost,
+  updatePost,
+  deletePost,
+}

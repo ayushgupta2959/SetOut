@@ -1,20 +1,20 @@
 import express from "express"
 import { postControllers } from "../controllers/post"
-import middleware from "../utils/middleware"
+import { middleware } from "../utils/middleware"
 
 const router = express.Router({ mergeParams: true })
 
 // index
-router.get("/", postControllers.getAll)
+router.get("/", postControllers.getAllPosts)
 
 // create
-router.post("/", middleware.isLoggedIn, postControllers.createOne)
+router.post("/", middleware.isLoggedIn, postControllers.createPost)
 
 // new
 router.get("/new", middleware.isLoggedIn, postControllers.newPostForm)
 
 // show
-router.get("/:postId", postControllers.getOne)
+router.get("/:postId", postControllers.getOnePost)
 
 // edit
 router.get(
@@ -24,9 +24,17 @@ router.get(
 )
 
 // update
-router.put("/:id", middleware.checkPostOwnership, postControllers.updatePost)
+router.put(
+  "/:postId",
+  middleware.checkPostOwnership,
+  postControllers.updatePost
+)
 
 // delete
-router.delete("/:id", middleware.checkPostOwnership, postControllers.deletePost)
+router.delete(
+  "/:postId",
+  middleware.checkPostOwnership,
+  postControllers.deletePost
+)
 
 export default router
