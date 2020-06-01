@@ -9,7 +9,6 @@ import methodOverride from "method-override"
 import commentRoutes from "./routes/comment"
 import postsRoutes from "./routes/post"
 import indexRoutes from "./routes/index"
-// const seedDB = require("./seeds")
 
 // some constants
 const uri = process.env.DATABASE_URI
@@ -27,7 +26,6 @@ mongoose
   })
   .then(() => {
     console.log("mongoose connected")
-    // seedDB();
   })
   .catch((err) => {
     console.log("mongoose connection failed => " + err)
